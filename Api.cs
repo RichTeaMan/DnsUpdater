@@ -39,6 +39,9 @@ namespace DnsUpdater
             Regex tokenRegex = new Regex("(?<=<div id=\"token\" hidden>)[^<]+");
             var match = tokenRegex.Match(body);
 
+            if (string.IsNullOrEmpty(match.Value)) {
+                throw new Exception("Login token not found. Check the password is correct.");
+            }
             return match.Value;
         }
 
