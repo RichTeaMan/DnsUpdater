@@ -9,10 +9,28 @@ namespace DnsUpdater
             return args.Where(a => a.StartsWith(prefix + "=")).Select(a => a.Replace(prefix + "=", string.Empty)).ToArray();
         }
 
-        public async static Task Main(string[] args)
+        public async static Task<int> Main(string[] args)
         {
             Console.WriteLine("DNS Updater.");
 
+
+            try
+            {
+                await RunDnsUpdater(args);
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occurred");
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex);
+                return -1;
+            }
+
+        }
+
+        private static async Task RunDnsUpdater(string[] args)
+        {
             string? uiPassword = ArgsByPrefix(args, "ui-password")?.FirstOrDefault();
 
             string[] hosts = ArgsByPrefix(args, "host");
@@ -62,6 +80,7 @@ namespace DnsUpdater
             {
                 Console.WriteLine($"Updating {host} -> {ipAddress}");
                 await api.UpdateDns(host, ipAddress, token);
+                Console.WriteLine($"Updating {host} -> {ipAddress}");
             }
         }
 
