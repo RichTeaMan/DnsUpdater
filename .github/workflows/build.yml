@@ -1,0 +1,53 @@
+name: Build
+
+on:
+  push:
+    branches:
+    - '*'
+  pull_request:
+    branches:
+    - '*'
+
+# runtime names from https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+jobs:
+  ci-build:
+    strategy:
+      fail-fast: false
+      matrix:
+        cfg:
+        - name: Windows
+          os: windows-latest
+          target: windows
+          runtime: win-x64
+          artifact: DnsUpdater.exe
+
+        - name: Linux
+          os: ubuntu-22.04
+          target: linux
+          runtime: linux-x64
+          artifact: DnsUpdater
+
+    name: ${{ matrix.cfg.name }} ${{ github.ref }}
+    runs-on: ${{ matrix.cfg.os }}
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 7.0.x
+    - name: Nuget Clear
+      run: dotnet nuget locals all --clear
+    - name: Install dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+    - name: Test
+      run: dotnet test --no-restore --verbosity normal
+    - name: Publish
+      run: dotnet publish DnsUpdater.csproj -c Release -r ${{ matrix.cfg.runtime }} /p:PublishSingleFile=true
+    - uses: actions/upload-artifact@v3
+      with:
+        name: DnsUpdater-${{ matrix.cfg.runtime }}
+        path: bin/Release/net7.0/${{ matrix.cfg.runtime }}/publish/
