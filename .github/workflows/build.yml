@@ -46,7 +46,7 @@ jobs:
     - name: Test
       run: dotnet test --no-restore --verbosity normal
     - name: Publish
-      run: dotnet publish DnsUpdater.csproj -c Release -r ${{ matrix.cfg.runtime }} /p:PublishSingleFile=true
+      run: dotnet publish DnsUpdater.csproj -c Release -r ${{ matrix.cfg.runtime }} /p:PublishSingleFile=true --self-contained true
     - uses: actions/upload-artifact@v3
       with:
         name: DnsUpdater-${{ matrix.cfg.runtime }}
