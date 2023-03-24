@@ -97,6 +97,9 @@ namespace DnsUpdater
 
             var body = await dnsResponse.Content.ReadAsStringAsync();
             var apiResponse = JsonConvert.DeserializeObject<RawDnsGetResponse>(body);
+            if (apiResponse is null) {
+                throw new Exception("DNS response is null.");
+            }
 
             return apiResponse.ToDictionary();                
         }
