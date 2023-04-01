@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Diagnostics;
 
 namespace DnsUpdater
 {
@@ -78,9 +79,9 @@ namespace DnsUpdater
 
             foreach (var host in hostsToUpdate)
             {
-                Console.WriteLine($"Updating {host} -> {ipAddress}");
+                Debug.WriteLine($"Updating {host} -> {ipAddress}");
                 await api.UpdateDns(host, ipAddress, token);
-                Console.WriteLine($"Updating {host} -> {ipAddress}");
+                Console.WriteLine($"Updated {host} -> {ipAddress}");
             }
         }
 

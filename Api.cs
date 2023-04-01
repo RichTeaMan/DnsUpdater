@@ -40,7 +40,7 @@ namespace DnsUpdater
             var match = tokenRegex.Match(body);
 
             if (string.IsNullOrEmpty(match.Value)) {
-                throw new Exception("Login token not found. Check the password is correct.");
+                throw new Exception("Login token not found. Check the password is correct. The Pihole page layout may also have changed.");
             }
             return match.Value;
         }
