@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# example vault script. Expects VAULT_ADDR, VAULT_ROLE_ID, and VAULT_SECRET_ID to be environment variables.
+# Pihole must have a web ui scret stored at pihole/ui_password.
+
+set -e
+
+VAULT_TOKEN=$(curl --silent --insecure -H "Content-type: application/json" -d \
+    "{\"role_id\": \"$VAULT_ROLE_ID\",\"secret_id\": \"$VAULT_SECRET_ID\" }}" \
+    "$VAULT_ADDR/v1/auth/approle/login" | jq -r .auth.client_token)
+
+VAULT_RESPONSE=$(curl --silent --insecure -H "X-Vault-Token: $VAULT_TOKEN" "$VAULT_ADDR/v1/secret/data/pihole")
+
+PASSWORD=$(echo "$VAULT_RESPONSE" | jq -r .data.data.ui_password)
+
+DnsUpdater DnsUpdater ui-password="$PASSWORD" host="$HOSTNAME.internal"
